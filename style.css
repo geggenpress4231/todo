@@ -1,0 +1,129 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.todo-container {
+    width: 300px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-100px);
+    text-align: center;
+    max-height: 400px; /* Set a maximum height for the container */
+    overflow: hidden; /* Hide overflowing content */
+}
+
+.todo-list {
+    width: 100%;
+    max-height: 250px; /* Set a maximum height for the todo list */
+    overflow-y: auto; /* Make the todo list scrollable if it exceeds the height */
+}
+
+.todo-input {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.todo-input input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    transition: border-color 0.3s;
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+}
+
+.todo-input input:focus {
+    border-color: #007bff;
+}
+
+#add-todo {
+    padding: 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+}
+
+#add-todo:hover {
+    background-color: #0056b3;
+}
+
+#add-todo:active {
+    background-color: #004085;
+}
+
+#add-todo.disabled {
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    background-color: #007bff; 
+}
+
+.todo-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+    width: 100%; /* Ensures the item spans the full width of the container */
+}
+
+h3 {
+    display: none;
+}
+
+.delete-btn {
+    background-color: #ff6b6b; /* Softer red color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background-color: darkred;
+}
+/* Change cursor when dragging */
+.todo-list-item {
+    cursor: grab;
+    transition: all 0.3s ease;
+}
+
+.todo-list-item:active {
+    cursor: grabbing;
+}
+
+/* Style the item being dragged */
+.dragging {
+    opacity: 0.5; /* Make the item semi-transparent */
+    transform: scale(1.05); /* Slightly enlarge the item */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Add a more pronounced shadow */
+}
+
+/* Highlight the potential drop target */
+.drag-over {
+    background-color: #e0f7fa; /* Light blue background */
+    border: 2px dashed #007bff; /* Dashed border indicating a drop target */
+}
