@@ -49,13 +49,14 @@ function addTodoItem() {
     item.setAttribute('draggable', true);
 
     addDeleteFeature(item);
-    addDragFeature(item);
+    item.addEventListener('dragstart', handleDragStart);
+    item.addEventListener('dragend', handleDragEnd);
 
-    document.querySelector("h3").setAttribute("style", "display: block;");
     todoList.appendChild(item);
     todoInput.value = "";
     addButton.classList.add("disabled");
 
+    updateH3Visibility();
     saveTodos();
 }
 
@@ -66,72 +67,45 @@ function addDeleteFeature(item) {
 
     deleteButton.addEventListener("click", () => {
         todoList.removeChild(item);
-        if (todoList.children.length === 1) {
-            document.querySelector("h3").setAttribute("style", "display: hidden;");
-        }
+        updateH3Visibility();
         saveTodos();
     });
 
     item.appendChild(deleteButton);
 }
 
-function addDragFeature(item) {
-    item.addEventListener('dragstart', handleDragStart);
-    item.addEventListener('dragover', handleDragOver);
-    item.addEventListener('drop', handleDrop);
-    item.addEventListener('dragend', handleDragEnd);
-    item.addEventListener('dragenter', handleDragEnter);
-    item.addEventListener('dragleave', handleDragLeave);
-}
-
-let draggedItem = null;
-
 function handleDragStart(event) {
-    draggedItem = event.target;
     event.target.classList.add('dragging');
-    event.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragOver(event) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    if (draggedItem !== event.target && draggedItem !== null) {
-        if (event.target.classList.contains('todo-list-item')) {
-            const rect = event.target.getBoundingClientRect();
-            const offset = event.clientY - rect.top;
-            if (offset > rect.height / 2) {
-                todoList.insertBefore(draggedItem, event.target.nextSibling);
-            } else {
-                todoList.insertBefore(draggedItem, event.target);
-            }
-        }
-    }
-    handleDragEnd(event);
-    saveTodos();
 }
 
 function handleDragEnd(event) {
-    draggedItem.classList.remove('dragging');
-    draggedItem = null;
-    document.querySelectorAll('.todo-list-item').forEach(item => {
-        item.classList.remove('drag-over');
-    });
+    event.target.classList.remove('dragging');
 }
 
-function handleDragEnter(event) {
-    if (event.target.classList.contains('todo-list-item')) {
-        event.target.classList.add('drag-over');
+todoList.addEventListener('dragover', e => {
+    e.preventDefault();
+    const afterElement = getDragAfterElement(todoList, e.clientY);
+    const draggable = document.querySelector('.dragging');
+    if (afterElement == null) {
+        todoList.appendChild(draggable);
+    } else {
+        todoList.insertBefore(draggable, afterElement);
     }
-}
+    saveTodos(); // Save the updated order
+});
 
-function handleDragLeave(event) {
-    if (event.target.classList.contains('todo-list-item')) {
-        event.target.classList.remove('drag-over');
-    }
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.todo-list-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 function saveTodos() {
@@ -151,13 +125,21 @@ function loadTodos() {
         item.setAttribute('draggable', true);
 
         addDeleteFeature(item);
-        addDragFeature(item);
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
 
         todoList.appendChild(item);
     });
 
-    if (todos.length > 0) {
-        document.querySelector("h3").setAttribute("style", "display: block;");
+    updateH3Visibility();
+}
+
+function updateH3Visibility() {
+    const h3 = document.querySelector("h3");
+    if (todoList.children.length === 0) {
+        h3.style.display = "none";
+    } else {
+        h3.style.display = "block";
     }
 }
 
